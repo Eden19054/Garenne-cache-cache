@@ -75,35 +75,6 @@ button{appearance:none;-webkit-appearance:none;display:block;width:100%;border:0
 </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-'use strict';
-
-// =============================================================
-// SUPABASE : UNE SEULE CHOSE À REMPLACER
-// Colle ici ta clé Publishable Supabase, celle qui commence par
-// sb_publishable_. Ne mets JAMAIS une clé service_role.
-// =============================================================
-const SUPABASE_URL = 'https://topzhrdwcvetzlczxnm.supabase.co';
-// Tu peux coller ici ta clé seule OU même toute la ligne
-// NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-// Le jeu récupère automatiquement la partie sb_publishable_...
-const SUPABASE_KEY_INPUT = `sb_publishable_XpTj8QY8Q87lQpeGR8kcNg__G67uP2z2F%2Fsupabase.com%2Fdashboard%2Fnew`;
-const SUPABASE_KEY = (() => {
-  const text = String(SUPABASE_KEY_INPUT || '').trim();
-  const match = text.match(/sb_publishable_[A-Za-z0-9._~-]+/);
-  return match ? match[0] : '';
-})();
-
-let supabaseClient = null;
-try {
-  if (window.supabase && SUPABASE_KEY && !SUPABASE_KEY.startsWith('COLLE_ICI')) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
-} catch (e) {
-  console.error('Supabase init error:', e);
-}
-
 const $ = id => document.getElementById(id);
 let role = 'hide', playerFirst='', playerLast='', gameCode='', historyAdmin=false;
 let realtimeChannel=null, lastChallengeIndex=-1, localCount=0, drawLimit=0;
