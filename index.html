@@ -178,8 +178,6 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
   <p class="note">Le mode historique est accessible avec le prénom <strong>14</strong> et le nom <strong>14</strong>. Les données de la partie sont partagées via Supabase.</p>
 </section>
 
-</main>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 
@@ -192,7 +190,7 @@ const supabaseClient = (
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_XpTj8QY8Q87lQpeGR8kcNg__G67uP2z")
 ) ? null : supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const ONLINE_REFRESH_MS = 30000;
+
 
 const challenges = [
  // MALUS
