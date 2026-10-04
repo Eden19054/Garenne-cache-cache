@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1712">
+<title>Garenne — Cache-Cache</title>
+<style>
+:root{--bg:#0d1712;--panel:#16251c;--panel2:#1e3225;--green:#8fca78;--green2:#b8e39f;--text:#f4f7f0;--muted:#aab8ad;--danger:#f09a8a;--ok:#8fca78}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 20% 10%,#294b32 0,transparent 32%),radial-gradient(circle at 90% 90%,#1d422b 0,transparent 28%),var(--bg);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:18px 18px}
+.app{width:min(920px,94vw);margin:22px auto;padding-bottom:30px;position:relative;z-index:1}
+.card{background:linear-gradient(145deg,#17271df5,#101c15f5);border:1px solid #ffffff18;border-radius:28px;box-shadow:0 22px 60px #0008;padding:clamp(22px,5vw,50px);backdrop-filter:blur(12px)}
+.logo{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--green2);font-weight:900}
+h1{font-size:clamp(42px,8vw,76px);line-height:.95;margin:15px 0 12px;letter-spacing:-.055em}h2{font-size:clamp(28px,5vw,44px);margin:8px 0 10px}h3{margin:0 0 12px}p{color:var(--muted);line-height:1.55}.lead{font-size:18px;max-width:680px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:8px}label{font-size:13px;color:var(--muted);font-weight:800}
+input{width:100%;padding:16px;border-radius:14px;border:1px solid #ffffff18;background:#09110c;color:var(--text);outline:none;font-size:16px;min-height:54px}input:focus{border-color:var(--green);box-shadow:0 0 0 3px #8fca7820}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 18px}.role{appearance:none;-webkit-appearance:none;display:block;width:100%;min-height:78px;cursor:pointer;touch-action:manipulation;user-select:none;border:2px solid #ffffff16;background:#0c1710;border-radius:16px;padding:15px;color:var(--text);text-align:left}.role.active{border-color:var(--green);background:#1c3522;box-shadow:0 0 0 3px #8fca7818}.role strong{display:block;margin-bottom:5px}.role span{color:var(--muted);font-size:13px}
+button{appearance:none;-webkit-appearance:none;display:block;width:100%;border:0;cursor:pointer;touch-action:manipulation;user-select:none;color:#0c160e;background:var(--green);font-weight:900;padding:16px 20px;border-radius:15px;font-size:16px;min-height:54px;transition:transform .12s,filter .12s,opacity .12s}button:active{transform:scale(.98)}button:hover{filter:brightness(1.05)}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#24382a;color:var(--text);border:1px solid #ffffff14}.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:25px}.badge{padding:9px 12px;border-radius:999px;background:#203626;color:var(--green2);font-size:13px;font-weight:900;white-space:nowrap}
+.players-box,.history,.result{margin-top:22px;padding:19px;border-radius:20px;background:#0a140e;border:1px solid #ffffff12}.players-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.players-head span{font-size:13px;color:var(--muted)}.players-list,.history-list{display:grid;gap:8px}.player-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:#142219;border:1px solid #ffffff0d}.player-name{font-weight:850}.player-role{font-size:12px;color:var(--muted)}
+.big{width:min(310px,78vw);height:min(310px,78vw);border-radius:50%;margin:35px auto 20px;padding:0;display:grid;place-items:center;text-align:center;background:radial-gradient(circle at 35% 25%,#c7efa8,#77b65e 48%,#3c703e);color:#0b180c;box-shadow:0 0 0 15px #8fca7810,0 0 70px #8fca7830;font-size:29px}.big small{display:block;font-size:14px;margin-top:6px;opacity:.7}.counter{font-size:13px;color:var(--muted);text-align:center}.result .kind{font-size:12px;text-transform:uppercase;letter-spacing:.15em;color:var(--green2);font-weight:900}.result h3{font-size:29px;margin:8px 0}.result p{margin:0}.history-item{padding:13px;border-radius:14px;background:#142219;border:1px solid #ffffff0d}.history-head{display:flex;justify-content:space-between;gap:10px}.history-name{font-weight:900}.history-kind{font-size:12px;color:var(--green2);font-weight:900}.history-title{margin-top:6px;font-weight:800}.history-meta{margin-top:5px;font-size:12px;color:var(--muted)}.empty{padding:13px;color:var(--muted);text-align:center}.note{font-size:12px;color:#819087;margin-top:12px}.status-ok{color:var(--ok)!important}.toast{min-height:21px;margin-top:12px;color:var(--danger);font-size:14px;font-weight:700}.hidden{display:none!important}.admin-tools{display:grid;gap:12px;margin-bottom:18px}.inline{display:flex;gap:10px}.inline button{width:auto;white-space:nowrap}.warning{padding:13px;border-radius:14px;background:#3b251e;border:1px solid #8d5c4e;color:#ffd5ca;font-size:13px;line-height:1.45}
+@media(max-width:650px){.grid,.roles,.actions{grid-template-columns:1fr}.card{padding:22px}.topbar{align-items:flex-start;flex-direction:column}.badge{align-self:flex-start}.inline{flex-direction:column}.inline button{width:100%}}
+</style>
+</head>
+<body>
+<main class="app">
+<section id="home" class="card">
+  <div class="logo">🌿 GARENNE · CACHE-CACHE</div>
+  <h1>À toi de te cacher.</h1>
+  <p class="lead">Choisis ton rôle, entre le code de la partie et rejoins les autres joueurs.</p>
+  <div class="grid">
+    <div class="field"><label for="first">Prénom</label><input id="first" autocomplete="given-name" placeholder="Ex. Alex"></div>
+    <div class="field"><label for="last">Nom</label><input id="last" autocomplete="family-name" placeholder="Ex. Martin"></div>
+  </div>
+  <div style="margin-top:18px">
+    <label>Je veux…</label>
+    <div class="roles">
+      <button type="button" class="role active" data-role="hide"><strong>🙈 Me cacher</strong><span>Je cherche une bonne cachette.</span></button>
+      <button type="button" class="role" data-role="seek"><strong>🔎 Chercher</strong><span>Je pars à la recherche des autres.</span></button>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="field"><label for="code">Code de partie</label><input id="code" maxlength="14" autocomplete="off" placeholder="Ex. GARENNE-42"></div>
+    <div style="display:flex;align-items:end"><button id="join" type="button">Rejoindre la partie →</button></div>
+  </div>
+  <div id="homeMsg" class="toast" aria-live="polite"></div>
+  <div id="configWarning" class="warning hidden">La connexion à Supabase n'est pas configurée dans ce fichier. Les boutons fonctionnent, mais le multijoueur ne peut pas démarrer tant que la clé Publishable n'est pas renseignée.</div>
+  <p class="note">Site créé par Eden · Mode admin : prénom <strong>14</strong> + nom <strong>14</strong>.</p>
+</section>
+
+<section id="game" class="card hidden">
+  <div class="topbar"><div><div class="logo">🌿 PARTIE EN COURS</div><h2 id="hello">Bienvenue</h2></div><div class="badge" id="roleBadge">🙈 CACHÉ</div></div>
+  <p id="gameText"></p>
+  <div class="players-box">
+    <div class="players-head"><strong>👥 Joueurs connectés</strong><span><b id="playersCount">0</b> en ligne</span></div>
+    <div id="playersList" class="players-list"><div class="empty">Aucun joueur connecté pour le moment.</div></div>
+    <div id="connectionStatus" class="note">⚪ Connexion…</div>
+  </div>
+  <button id="drawButton" class="big" type="button"><span>🎲<br><strong>TIRER</strong><small>un défi</small></span></button>
+  <div class="counter">Tirages effectués : <strong id="count">0</strong></div>
+  <div id="result" class="result hidden"><div class="kind" id="resultKind"></div><h3 id="resultTitle"></h3><p id="resultText"></p><div class="actions"><button id="again" class="secondary" type="button">Fermer</button><button id="reset" type="button">Retour au menu</button></div></div>
+  <div id="historyPanel" class="history hidden">
+    <h3>📜 Historique de la partie</h3>
+    <div class="admin-tools">
+      <div class="field"><label for="drawLimit">🎯 Nombre maximum de tirages par joueur</label><div class="inline"><input id="drawLimit" type="number" min="1" max="999" placeholder="Ex. 5"><button id="saveDrawLimit" type="button">Enregistrer</button></div><div id="limitMsg" class="note"></div></div>
+      <button id="resetGameAdmin" class="secondary" type="button">🗑️ Réinitialiser la partie</button>
+      <div id="resetGameMsg" class="note"></div>
+    </div>
+    <div id="historyList" class="history-list"><div class="empty">Aucun tirage pour le moment.</div></div>
+  </div>
+  <button id="backMenu" class="secondary" style="margin-top:14px" type="button">← Retour au menu</button>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+'use strict';
+
+// =============================================================
+// SUPABASE : UNE SEULE CHOSE À REMPLACER
+// Colle ici ta clé Publishable Supabase, celle qui commence par
+// sb_publishable_. Ne mets JAMAIS une clé service_role.
+// =============================================================
+const SUPABASE_URL = 'https://topzhrdwcvetzlczxnm.supabase.co';
+const SUPABASE_KEY = 'NEXT_PUBLIC_SUPABASE_URL=https://topzhrdwcvetlzlczxnm.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_XpTj8QY8Q87lQpeGR8kcNg__G67uP2z';
+
+let supabaseClient = null;
+try {
+  if (window.supabase && SUPABASE_KEY && !SUPABASE_KEY.startsWith('COLLE_ICI')) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+} catch (e) {
+  console.error('Supabase init error:', e);
+}
+
+const $ = id => document.getElementById(id);
+let role = 'hide', playerFirst='', playerLast='', gameCode='', historyAdmin=false;
+let realtimeChannel=null, lastChallengeIndex=-1, localCount=0, drawLimit=0;
+
+const challenges = [
+ {kind:'MALUS',title:'📸 PHOTO DE LA CACHETTE',text:'Envoie une photo de ta cachette au chercheur. Ne montre pas de personne ni d’information privée.'},
+ {kind:'MALUS',title:'📳 TON TÉLÉPHONE SONNE',text:'Ton téléphone va sonner une fois à partir de maintenant. N’oublie pas de mettre la sonnerie.'},
+ {kind:'MALUS',title:'🗿 NE BOUGE PLUS',text:'Reste totalement immobile pendant 5 minutes.'},
+ {kind:'MALUS',title:'🤫 POSITION PARTAGÉE',text:'Pendant 5 minutes, partage ta position uniquement si tu es d’accord et dans un cadre sûr.'},
+ {kind:'MALUS',title:'🔦 APPEL MAUDIT',text:'Tu seras en appel vidéo avec le chercheur pendant 5 minutes.'},
+ {kind:'MALUS',title:'⏱️ IMMOBILE 2 MIN',text:'Pendant 2 minutes, tu ne peux ni changer de cachette ni te déplacer.'},
+ {kind:'MALUS',title:'👋 FRAPPE DES MAINS',text:'Frappe des mains pendant 2 minutes.'},
+ {kind:'MALUS',title:'🔊 FAIS UN CRI',text:'Fais un cri audible depuis un endroit autorisé, sans quitter ta cachette pendant 1 minute.'},
+ {kind:'MALUS',title:'🎤 MESSAGE VOCAL',text:'Envoie un message vocal de 3 secondes au groupe.'},
+ {kind:'MALUS',title:'↩️ RETOUR',text:'Va à la Villa puis retourne à ta cachette.'},
+ {kind:'MALUS',title:'🐢 AU RALENTI',text:'Pendant 2 minutes, si tu dois te déplacer, fais-le très lentement.'},
+ {kind:'MALUS',title:'🙈 YEUX FERMÉS',text:'Pendant 20 secondes, reste immobile les yeux fermés.'},
+ {kind:'MALUS',title:'🧭 DIRECTION',text:'Donne aux chercheurs le monument le plus près de toi, sans donner ta position exacte.'},
+ {kind:'MALUS',title:'🔀 CHANGEMENT',text:'Tous les joueurs changent de cachette.'},
+ {kind:'BONUS',title:'🏃 FUITE EXPRESS',text:'Tu gagnes 60 secondes pour changer de cachette.'},
+ {kind:'BONUS',title:'🕵️ FAUSSE PISTE',text:'Une fausse localisation de toi peut être envoyée au chercheur.'},
+ {kind:'BONUS',title:'🛡️ BOUCLIER',text:'Pendant 3 minutes, ton dernier indice ne peut pas être utilisé contre toi.'},
+ {kind:'BONUS',title:'⏸️ PAUSE',text:'Tu peux geler le chercheur 10 secondes, une fois dans la partie.'},
+ {kind:'BONUS',title:'👻 INVISIBLE',text:'Pendant 2 minutes, les chercheurs doivent ignorer ta dernière zone connue.'},
+ {kind:'BONUS',title:'⏳ TEMPS BONUS',text:'Ajoute 2 minutes au temps de cachette générale.'},
+ {kind:'BONUS',title:'🧩 TRAQUEUR',text:'Tu peux voir la position du chercheur pendant 5 minutes, si tous les joueurs concernés sont d’accord.'},
+ {kind:'BONUS',title:'🎭 DOUBLE BLUFF',text:'Donne un gage au chercheur pour le détourner.'},
+ {kind:'BONUS',title:'🛡️ ANTI-REPÉRAGE',text:'Tu peux ignorer le prochain malus qui te concerne.'},
+ {kind:'BONUS',title:'🚪 SORTIE SECRÈTE',text:'Tu peux sortir de la zone pendant 5 minutes pour rejoindre une nouvelle cachette, si les règles de la partie l’autorisent.'},
+ {kind:'BONUS',title:'🍀 CHANCE',text:'Le prochain tirage est automatiquement considéré comme un bonus.'},
+ {kind:'DÉFI',title:'📍 POSITION APPROXIMATIVE',text:'Si tu acceptes le défi, partage seulement une zone approximative pendant 15 minutes, jamais une adresse précise.'},
+ {kind:'DÉFI',title:'🦊 NOM DE CODE',text:'Invente un nom de code pour ta cachette et fais-le deviner.'},
+ {kind:'DÉFI',title:'🌲 BRUIT DE LA FORÊT',text:'Imite discrètement un animal.'},
+ {kind:'DÉFI',title:'📷 PHOTO INDICE',text:'Envoie une photo d’un détail de ton environnement sans révéler directement ta position.'},
+ {kind:'DÉFI',title:'🎤 IMITATION',text:'Envoie un vocal de 5 secondes en imitant un animal.'},
+ {kind:'DÉFI',title:'🧠 DEVINETTE',text:'Envoie une devinette au groupe. Si personne ne trouve, tu gagnes 1 minute.'},
+ {kind:'DÉFI',title:'🔢 CODE SECRET',text:'Choisis un nombre entre 1 et 20. Les chercheurs ont une seule tentative.'},
+ {kind:'DÉFI',title:'🌿 INDICE NATURE',text:'Décris un élément naturel près de toi sans dire où tu es.'},
+ {kind:'DÉFI',title:'😶 SANS PARLER',text:'Fais deviner ton prénom uniquement avec des gestes à un coéquipier.'},
+ {kind:'DÉFI',title:'🎬 MINI VIDÉO',text:'Si tu le souhaites, envoie une courte vidéo de l’environnement sans révéler une information privée.'},
+ {kind:'DÉFI',title:'🕶️ CAMOUFLAGE',text:'Trouve un détail autour de toi qui pourrait te servir de camouflage et décris-le.'},
+ {kind:'DÉFI',title:'📍 ZONE APPROXIMATIVE',text:'Si tu es d’accord, partage uniquement une zone approximative, jamais une adresse précise.'},
+ {kind:'DÉFI',title:'🎲 PAIR OU IMPAIR',text:'Choisis pair ou impair avant un nombre aléatoire. Si tu gagnes, tu obtiens 1 minute bonus.'}
+];
+
+function dbReady(){ return !!supabaseClient; }
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function setHomeMsg(t){$('homeMsg').textContent=t||'';}
+function setStatus(t,ok=false){$('connectionStatus').textContent=t;$('connectionStatus').classList.toggle('status-ok',ok);}
+function normalizeCode(v){return String(v||'').trim().toUpperCase().replace(/\s+/g,'-').replace(/[^A-Z0-9_-]/g,'').slice(0,14);}
+
+function selectRole(newRole, button){
+  role=newRole;
+  document.querySelectorAll('.role').forEach(b=>b.classList.remove('active'));
+  button.classList.add('active');
+}
+
+document.querySelectorAll('.role').forEach(button=>{
+  button.addEventListener('click',e=>{e.preventDefault();selectRole(button.dataset.role,button);});
+  button.addEventListener('touchend',()=>selectRole(button.dataset.role,button),{passive:true});
+});
+
+async function ensureGame(){
+  if(!dbReady()) return false;
+  const {error}=await supabaseClient.from('games').upsert({code:gameCode,draw_limit:0},{onConflict:'code',ignoreDuplicates:true});
+  if(error){console.error(error);setHomeMsg('Impossible de rejoindre la partie : '+error.message);return false;}
+  return true;
+}
+async function getLimit(){
+  if(!dbReady()) return 0;
+  const {data,error}=await supabaseClient.from('games').select('draw_limit').eq('code',gameCode).maybeSingle();
+  if(error){console.error(error);return 0;}
+  const n=Number(data?.draw_limit||0);return Number.isFinite(n)&&n>0?n:0;
+}
+async function getMyCount(){
+  if(!dbReady()||!gameCode||historyAdmin)return 0;
+  const {count,error}=await supabaseClient.from('draws').select('id',{count:'exact',head:true}).eq('game_code',gameCode).eq('first',playerFirst).eq('last',playerLast);
+  if(error){console.error(error);return 0;} return count||0;
+}
+async function updateDrawButton(){
+  if(historyAdmin)return;
+  drawLimit=await getLimit();
+  const current=await getMyCount();localCount=current;$('count').textContent=current;
+  if(drawLimit>0&&current>=drawLimit){$('drawButton').disabled=true;$('gameText').textContent=`Tu as utilisé tes ${drawLimit} tirage${drawLimit>1?'s':''} autorisé${drawLimit>1?'s':''}.`;}
+  else{$('drawButton').disabled=false;$('gameText').textContent=role==='hide'?'Trouve ta cachette et utilise le tirage mystère !':'Prépare ta recherche et utilise le tirage mystère !';}
+}
+
+async function loadHistory(){
+  if(!dbReady())return [];
+  const {data,error}=await supabaseClient.from('draws').select('id,first,last,role,kind,title,created_at').eq('game_code',gameCode).order('created_at',{ascending:true}).limit(500);
+  if(error){console.error(error);$('historyList').innerHTML=`<div class="empty">Erreur : ${escapeHtml(error.message)}</div>`;return [];}return data||[];
+}
+async function renderHistory(){
+  if(!historyAdmin){$('historyPanel').classList.add('hidden');return;}
+  $('historyPanel').classList.remove('hidden');
+  drawLimit=await getLimit();$('drawLimit').value=drawLimit||'';$('limitMsg').textContent=drawLimit?`Limite actuelle : ${drawLimit} tirage${drawLimit>1?'s':''} par joueur.`:'Aucune limite définie.';
+  const history=await loadHistory();
+  if(!history.length){$('historyList').innerHTML='<div class="empty">Aucun tirage pour le moment.</div>';return;}
+  $('historyList').innerHTML=history.slice().reverse().map((x,i)=>`<div class="history-item"><div class="history-head"><div class="history-name">${escapeHtml(x.first)} ${escapeHtml(x.last)}</div><div class="history-kind">${escapeHtml(x.kind)}</div></div><div class="history-title">${escapeHtml(x.title)}</div><div class="history-meta">Tirage n°${history.length-i} · ${x.created_at?new Date(x.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):''}</div></div>`).join('');
+}
+
+function renderPresence(state){
+  const all=[];Object.values(state||{}).forEach(arr=>arr.forEach(p=>{if(p?.first&&p?.last)all.push(p);}));
+  const unique=[];const seen=new Set();for(const p of all){const k=`${p.first}|${p.last}|${p.role}`;if(!seen.has(k)){seen.add(k);unique.push(p);}}
+  unique.sort((a,b)=>(a.first+' '+a.last).localeCompare(b.first+' '+b.last,'fr'));
+  $('playersCount').textContent=unique.length;
+  $('playersList').innerHTML=unique.length?unique.map(p=>`<div class="player-item"><div class="player-name">👤 ${escapeHtml(p.first)} ${escapeHtml(p.last)}</div><div class="player-role">${p.role==='hide'?'🙈 Caché':'🔎 Chercheur'}</div></div>`).join(''):'<div class="empty">Aucun joueur connecté pour le moment.</div>';
+}
+
+async function startRealtime(){
+  if(!dbReady())return;
+  await stopRealtime();
+  const safeCode=gameCode.toLowerCase().replace(/[^a-z0-9_-]/g,'');
+  realtimeChannel=supabaseClient.channel('garenne-'+safeCode,{config:{presence:{key:crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2)}}});
+  realtimeChannel.on('presence',{event:'sync'},()=>renderPresence(realtimeChannel.presenceState()));
+  realtimeChannel.on('postgres_changes',{event:'*',schema:'public',table:'draws',filter:`game_code=eq.${gameCode}`},async()=>{if(historyAdmin)await renderHistory();await updateDrawButton();});
+  realtimeChannel.on('postgres_changes',{event:'*',schema:'public',table:'games',filter:`code=eq.${gameCode}`},async()=>{if(historyAdmin)await renderHistory();await updateDrawButton();});
+  realtimeChannel.subscribe(async status=>{
+    if(status==='SUBSCRIBED'){setStatus('🟢 Connecté au serveur',true);await realtimeChannel.track({first:playerFirst,last:playerLast,role});renderPresence(realtimeChannel.presenceState());}
+    else if(status==='CHANNEL_ERROR')setStatus('🔴 Erreur de connexion au serveur');
+    else if(status==='TIMED_OUT')setStatus('🟠 Connexion trop lente');
+  });
+}
+async function stopRealtime(){if(realtimeChannel&&dbReady()){try{await supabaseClient.removeChannel(realtimeChannel);}catch(e){console.warn(e);}}realtimeChannel=null;}
+
+async function join(){
+  setHomeMsg('');
+  const first=$('first').value.trim(),last=$('last').value.trim(),code=normalizeCode($('code').value);
+  if(!first||!last||!code){setHomeMsg('Renseigne ton prénom, ton nom et le code de partie.');return;}
+  if(!dbReady()){setHomeMsg('La clé Publishable Supabase n’est pas encore renseignée dans index.html.');$('configWarning').classList.remove('hidden');return;}
+  historyAdmin=first==='14'&&last==='14';playerFirst=first;playerLast=last;gameCode=code;$('code').value=code;
+  $('join').disabled=true;$('join').textContent='Connexion…';
+  try{
+    if(!(await ensureGame()))return;
+    $('home').classList.add('hidden');$('game').classList.remove('hidden');
+    $('hello').textContent=historyAdmin?`Mode historique · ${gameCode}`:`Salut ${first} ${last} !`;
+    $('roleBadge').textContent=role==='hide'?'🙈 CACHÉ':'🔎 CHERCHEUR';
+    $('drawButton').classList.toggle('hidden',historyAdmin);
+    $('result').classList.add('hidden');
+    $('connectionStatus').textContent='🟡 Connexion…';
+    if(historyAdmin){await renderHistory();}else{localCount=await getMyCount();$('count').textContent=localCount;await updateDrawButton();}
+    await startRealtime();
+  }catch(e){console.error(e);setHomeMsg('Erreur inattendue : '+e.message);}finally{$('join').disabled=false;$('join').textContent='Rejoindre la partie →';}
+}
+
+async function draw(){
+  if(historyAdmin||!dbReady()||!gameCode||$('drawButton').disabled)return;
+  const current=await getMyCount();drawLimit=await getLimit();
+  if(drawLimit>0&&current>=drawLimit){await updateDrawButton();return;}
+  let i;do{i=Math.floor(Math.random()*challenges.length)}while(i===lastChallengeIndex&&challenges.length>1);lastChallengeIndex=i;const c=challenges[i];
+  $('drawButton').disabled=true;
+  const {error}=await supabaseClient.from('draws').insert({game_code:gameCode,first:playerFirst,last:playerLast,role,kind:c.kind,title:c.title});
+  if(error){console.error(error);$('drawButton').disabled=false;alert('Le tirage n’a pas pu être enregistré : '+error.message);return;}
+  $('resultKind').textContent=c.kind;$('resultTitle').textContent=c.title;$('resultText').textContent=c.text;$('result').classList.remove('hidden');
+  if(navigator.vibrate)navigator.vibrate(120);
+  await updateDrawButton();
+}
+
+async function saveLimit(){
+  if(!historyAdmin||!dbReady())return;const n=Number($('drawLimit').value);if(!Number.isInteger(n)||n<1){$('limitMsg').textContent='Entre un nombre entier supérieur ou égal à 1.';return;}
+  const {error}=await supabaseClient.from('games').update({draw_limit:n}).eq('code',gameCode);if(error){$('limitMsg').textContent='Erreur : '+error.message;return;}$('limitMsg').textContent=`Limite enregistrée : ${n} tirage${n>1?'s':''} par joueur.`;drawLimit=n;
+}
+async function resetAdmin(){
+  if(!historyAdmin||!dbReady())return;if(!confirm(`Réinitialiser la partie ${gameCode} ?\n\nTous les tirages seront supprimés et la limite sera remise à zéro.`))return;
+  const a=await supabaseClient.from('draws').delete().eq('game_code',gameCode);if(a.error){$('resetGameMsg').textContent='Erreur : '+a.error.message;return;}
+  const b=await supabaseClient.from('games').update({draw_limit:0}).eq('code',gameCode);if(b.error){$('resetGameMsg').textContent='Erreur : '+b.error.message;return;}
+  $('resetGameMsg').textContent='Partie réinitialisée.';await renderHistory();
+}
+async function backMenu(){await stopRealtime();role='hide';playerFirst=playerLast=gameCode='';historyAdmin=false;lastChallengeIndex=-1;drawLimit=0;localCount=0;$('game').classList.add('hidden');$('home').classList.remove('hidden');$('first').value='';$('last').value='';$('code').value='';$('result').classList.add('hidden');$('historyPanel').classList.add('hidden');$('drawButton').classList.remove('hidden');$('drawButton').disabled=false;$('count').textContent='0';$('homeMsg').textContent='';document.querySelectorAll('.role').forEach(b=>b.classList.toggle('active',b.dataset.role==='hide'));}
+
+$('join').addEventListener('click',join);$('drawButton').addEventListener('click',draw);$('again').addEventListener('click',()=>$('result').classList.add('hidden'));$('reset').addEventListener('click',backMenu);$('backMenu').addEventListener('click',backMenu);$('saveDrawLimit').addEventListener('click',saveLimit);$('resetGameAdmin').addEventListener('click',resetAdmin);
+$('code').addEventListener('input',e=>{e.target.value=normalizeCode(e.target.value);});
+['first','last','code'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')join();}));
+
+if(!dbReady())$('configWarning').classList.remove('hidden');
+</script>
+</body>
+</html>
