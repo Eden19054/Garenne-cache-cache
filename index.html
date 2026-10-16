@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr">
-<head><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Garenne — Cache-Cache</title>
@@ -152,9 +152,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
   <button class="secondary" id="backMenu" type="button" style="margin-top:12px">← Retour au menu</button>
 </main>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// --- CONFIGURATION SUPABASE ---
 const SUPABASE_URL = 'https://dgadwrbduthmuuujgvju.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_pi8vaaU177PBAXAWjIWC0g_s-CCIFtS';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
