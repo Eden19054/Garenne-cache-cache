@@ -132,24 +132,37 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
   <div id="historyPanel" class="history hidden">
     <h3>📜 Tirages de la partie</h3>
+
+    <div id="adminLimitBox" class="field" style="margin-bottom:16px">
+      <label for="drawLimit">🎯 Nombre maximum de tirages par joueur</label>
+      <div style="display:flex;gap:10px">
+        <input id="drawLimit" type="number" min="1" max="999" placeholder="Ex. 5">
+        <button id="saveDrawLimit" type="button" style="width:auto;white-space:nowrap">Enregistrer</button>
+      </div>
+      <div id="limitMsg" class="note"></div>
+    </div>
+
     <button id="resetGameAdmin" type="button" class="secondary" style="margin-bottom:16px">
       🗑️ Réinitialiser la partie
     </button>
     <div id="resetGameMsg" class="note"></div>
+
     <div id="historyList" class="history-list">
       <div class="empty-history">Aucun tirage pour le moment.</div>
     </div>
   </div>
 
   <button class="secondary" id="backMenu" type="button" style="margin-top:12px">← Retour au menu</button>
-</section>
+</main>
 
 <script>
+// --- CONFIGURATION SUPABASE ---
 const SUPABASE_URL = 'https://dgadwrbduthmuuujgvju.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_pi8vaaU177PBAXAWjIWC0g_s-CCIFtS';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const challenges = [
+ // MALUS
  {kind:"MALUS", title:"📸 PHOTO DE LA CACHETTE", text:"Envoie une photo de ta cachette au chercheur. Ne montre pas de personne ni d’information privée."},
  {kind:"MALUS", title:"📳 TON TÉLÉPHONE SONNE", text:"Ton téléphone va sonner 1 fois à partir de maintenant.(N'oublie pas de mettre la sonnerie)"},
  {kind:"MALUS", title:"🗿 NE BOUGE PLUS", text:"Reste totalement immobile pendant 5 minutes. Ta cachette ne change pas !"},
@@ -165,6 +178,7 @@ const challenges = [
  {kind:"MALUS", title:"🧭 DIRECTION", text:"Donne aux chercheurs le monument le plus près de toi, sans donner ta position exacte."},
  {kind:"MALUS", title:"🔀 CHANGEMENT", text:"Tous les joueurs changent de cachette."},
 
+ // BONUS
  {kind:"BONUS", title:"📸 FAUSSE PHOTO DE TA CACHETTE", text:"Une fausse photo de ta cachette va être envoyée au chercheur."},
  {kind:"BONUS", title:"🏃 FUITE EXPRESS", text:"Tu gagnes 60 secondes pour changer de cachette, le chercheur est immobilisé pendant 1 minute."},
  {kind:"BONUS", title:"🕵️ FAUSSE PISTE", text:"Une fausse localisation de toi peut être envoyée au chercheur."},
@@ -179,6 +193,7 @@ const challenges = [
  {kind:"BONUS", title:"🚪 SORTIE SECRÈTE", text:"Tu peux sortir de la zone pendant 5 minutes pour rejoindre une nouvelle cachette."},
  {kind:"BONUS", title:"🍀 CHANCE", text:"Le prochain tirage est automatiquement considéré comme un bonus."},
 
+ // DÉFIS
  {kind:"DÉFI", title:"📍 POSITION PARTAGÉE", text:"Si tu acceptes le défi, ta zone approximative peut être partagée pendant 15 minutes et si tu ne te fais pas trouver pendant ces 15 minutes tu auras un joker."},
  {kind:"DÉFI", title:"🦊 NOM DE CODE", text:"Invente un nom de code pour ta cachette et fais-le deviner."},
  {kind:"DÉFI", title:"🌲 BRUIT DE LA FORÊT", text:"Imite discrètement un animal. Les chercheurs ont une chance de deviner lequel."},
@@ -194,15 +209,16 @@ const challenges = [
  {kind:"DÉFI", title:"🎲 PAIR OU IMPAIR", text:"Choisis pair ou impair avant un nombre aléatoire. Si tu gagnes, tu obtiens 1 minute bonus."}
 ];
 
-let role="hide", used=0, lastIndex=-1, playerFirst="", playerLast="", gameCode="", historyAdmin=false;
+let role="hide", used=0, lastIndex=-1, playerFirst="", playerLast="", gameCode="", historyAdmin=false, drawLimit=0;
 
-document.querySelectorAll(".role").forEach(b => {
-  b.addEventListener("click", () => {
-    role = b.getAttribute("data-role");
-    document.querySelectorAll(".role").forEach(x => x.classList.toggle("active", x === b));
+document.querySelectorAll(".role").forEach(b=>{
+  b.addEventListener("click",()=>{
+    role=b.dataset.role;
+    document.querySelectorAll(".role").forEach(x=>x.classList.toggle("active",x===b));
   });
 });
 
+// --- SYNCHRONISATION SUPABASE POUR L'HISTORIQUE ---
 async function getHistoryFromSupabase(){
   if (!gameCode) return [];
   const { data, error } = await supabase
@@ -227,7 +243,7 @@ async function getHistoryFromSupabase(){
 
 async function saveDrawToSupabase(kind, title) {
   if (!gameCode || historyAdmin) return;
-  await supabase.from('game_draws').insert([
+  await supabase.from('game_draws'].insert([
     {
       game_code: gameCode,
       first_name: playerFirst,
@@ -239,32 +255,88 @@ async function saveDrawToSupabase(kind, title) {
   ]);
 }
 
-async function resetGameAdmin(){
-  if(!historyAdmin || !gameCode) return;
+function limitKey(){
+  return `garenne-limit-${gameCode.toUpperCase()}`;
+}
 
-  const confirmed = confirm("Réinitialiser la partie " + gameCode + " ?\n\nCela supprimera tous les tirages enregistrés pour cette partie.\nCette action est irréversible.");
-  if(!confirmed) return;
+function getDrawLimit(){
+  const value=parseInt(localStorage.getItem(limitKey()) || "0",10);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
 
-  const { error } = await supabase
-    .from('game_draws')
-    .delete()
-    .eq('game_code', gameCode);
+function saveDrawLimit(){
+  const input=document.getElementById("drawLimit");
+  const msg=document.getElementById("limitMsg");
+  const value=parseInt(input.value,10);
 
-  if(error){
-    document.getElementById("resetGameMsg").textContent = "Erreur lors de la réinitialisation.";
+  if(!Number.isFinite(value) || value < 1){
+    msg.textContent="Choisis un nombre de tirages supérieur ou égal à 1.";
     return;
   }
 
-  used = 0;
-  lastIndex = -1;
-  document.getElementById("resetGameMsg").textContent = "La partie " + gameCode + " a été réinitialisée.";
+  drawLimit=value;
+  localStorage.setItem(limitKey(), String(value));
+  msg.textContent=`Limite enregistrée : ${value} tirage${value>1?"s":""} maximum par joueur.`;
+}
+
+async function getPlayerDrawCount() {
+  if (historyAdmin) return 0;
+  const history = await getHistoryFromSupabase();
+  return history.filter(item =>
+    item.first.toLowerCase() === playerFirst.toLowerCase() &&
+    item.last.toLowerCase() === playerLast.toLowerCase()
+  ).length;
+}
+
+async function updateDrawButton(){
+  const button=document.getElementById("drawButton");
+  const current = await getPlayerDrawCount();
+
+  if(historyAdmin || drawLimit===0){
+    button.style.opacity="";
+    button.style.pointerEvents="";
+    return;
+  }
+
+  if(current>=drawLimit){
+    button.style.opacity=".45";
+    button.style.pointerEvents="none";
+    document.getElementById("gameText").textContent=
+      `Tu as utilisé tes ${drawLimit} tirage${drawLimit>1?"s":""} autorisé${drawLimit>1?"s":""} pour cette partie.`;
+  }else{
+    button.style.opacity="";
+    button.style.pointerEvents="";
+    document.getElementById("gameText").textContent=role==="hide"
+      ?`Trouve ta cachette et utilise le tirage mystère. Tirages restants : ${drawLimit-current}.`
+      :`Prépare ta recherche et utilise le tirage mystère. Tirages restants : ${drawLimit-current}.`;
+  }
+}
+
+async function resetGameAdmin(){
+  if(!historyAdmin || !gameCode) return;
+
+  const confirmed = confirm(`Réinitialiser la partie ${gameCode} ?\n\nCela supprimera tous les tirages enregistrés et la limite de tirages.\nCette action est irréversible.`);
+  if(!confirmed) return;
+
+  await supabase.from('game_draws').delete().eq('game_code', gameCode);
+  localStorage.removeItem(limitKey());
+
+  drawLimit=0;
+  used=0;
+  lastIndex=-1;
+
+  document.getElementById("drawLimit").value="";
+  document.getElementById("limitMsg").textContent="Partie réinitialisée : aucune limite de tirages.";
+  document.getElementById("resetGameMsg").textContent=`La partie ${gameCode} a été réinitialisée.`;
+
   await renderHistory();
-  document.getElementById("count").textContent = "0";
+  await updateDrawButton();
+  document.getElementById("count").textContent="0";
 }
 
 async function renderHistory(){
-  const panel = document.getElementById("historyPanel");
-  const list = document.getElementById("historyList");
+  const panel=document.getElementById("historyPanel");
+  const list=document.getElementById("historyList");
 
   if(!historyAdmin){
     panel.classList.add("hidden");
@@ -272,14 +344,20 @@ async function renderHistory(){
   }
 
   panel.classList.remove("hidden");
+  drawLimit=getDrawLimit();
+  document.getElementById("drawLimit").value=drawLimit || "";
+  document.getElementById("limitMsg").textContent=drawLimit
+    ? `Limite actuelle : ${drawLimit} tirage${drawLimit>1?"s":""} par joueur.`
+    : "Aucune limite définie pour cette partie.";
+    
   const remoteHistory = await getHistoryFromSupabase();
 
   if(!remoteHistory.length){
-    list.innerHTML = '<div class="empty-history">Aucun tirage pour le moment.</div>';
+    list.innerHTML='<div class="empty-history">Aucun tirage pour le moment.</div>';
     return;
   }
 
-  list.innerHTML = remoteHistory.slice().reverse().map(item => `
+  list.innerHTML=remoteHistory.slice().reverse().map(item=>`
     <div class="history-item" style="background:#0a120d; padding:12px; margin-bottom:8px; border-radius:10px; border:1px solid #ffffff12;">
       <div style="display:flex; justify-content:space-between; font-weight:bold;">
         <div>${escapeHtml(item.first)} ${escapeHtml(item.last)}</div>
@@ -298,96 +376,97 @@ function escapeHtml(value){
 }
 
 async function join(){
-  const first = document.getElementById("first").value.trim();
-  const last = document.getElementById("last").value.trim();
-  const code = document.getElementById("code").value.trim();
-  const msg = document.getElementById("homeMsg");
-  
-  if(!first || !last || !code){ 
-    msg.textContent = "Renseigne ton prénom, ton nom et le code de partie."; 
-    return; 
-  }
+  const first=document.getElementById("first").value.trim();
+  const last=document.getElementById("last").value.trim();
+  const code=document.getElementById("code").value.trim();
+  const msg=document.getElementById("homeMsg");
+  if(!first || !last || !code){ msg.textContent="Renseigne ton prénom, ton nom et le code de partie."; return; }
 
-  historyAdmin = (first === "14" && last === "14");
+  historyAdmin = first === "14" && last === "14";
 
-  playerFirst = first;
-  playerLast = last;
-  gameCode = code.toUpperCase();
+  playerFirst=first;
+  playerLast=last;
+  gameCode=code.toUpperCase();
 
-  msg.textContent = "";
+  msg.textContent="";
   document.getElementById("home").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
-  document.getElementById("hello").textContent = historyAdmin
-    ? "Mode historique · partie " + gameCode
-    : "Salut " + first + " " + last + " !";
-  document.getElementById("roleBadge").textContent = (role === "hide") ? "🙈 CACHÉ" : "🔎 CHERCHEUR";
-  document.getElementById("gameText").textContent = (role === "hide")
-    ? "Trouve ta cachette et utilise le tirage mystère autant de fois que tu veux !"
-    : "Prépare ta recherche et utilise le tirage mystère autant de fois que tu veux !";
+  document.getElementById("hello").textContent=historyAdmin
+    ? `Mode historique · partie ${gameCode}`
+    : `Salut ${first} ${last} !`;
+  document.getElementById("roleBadge").textContent=role==="hide"?"🙈 CACHÉ":"🔎 CHERCHEUR";
+  document.getElementById("gameText").textContent=role==="hide"
+    ?"Trouve ta cachette et utilise le tirage mystère autant de fois que tu veux !"
+    :"Prépare ta recherche et utilise le tirage mystère autant de fois que tu veux !";
 
+  drawLimit=getDrawLimit();
   await renderHistory();
-  window.scrollTo({top:0, behavior:"smooth"});
+  await updateDrawButton();
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 document.getElementById("join").addEventListener("click", join);
+document.getElementById("saveDrawLimit").addEventListener("click", saveDrawLimit);
 document.getElementById("resetGameAdmin").addEventListener("click", resetGameAdmin);
 
 async function draw(){
+  drawLimit=getDrawLimit();
+
+  if(!historyAdmin && drawLimit>0 && (await getPlayerDrawCount())>=drawLimit){
+    await updateDrawButton();
+    return;
+  }
+
   used++;
   let i;
-  do { 
-    i = Math.floor(Math.random() * challenges.length); 
-  } while(i === lastIndex && challenges.length > 1);
-  
-  lastIndex = i;
-  const c = challenges[i];
+  do{i=Math.floor(Math.random()*challenges.length)}while(i===lastIndex && challenges.length>1);
+  lastIndex=i;
+  const c=challenges[i];
 
-  document.getElementById("count").textContent = used;
-  document.getElementById("resultKind").textContent = c.kind;
-  document.getElementById("resultTitle").textContent = c.title;
-  document.getElementById("resultText").textContent = c.text;
+  document.getElementById("count").textContent=used;
+  document.getElementById("resultKind").textContent=c.kind;
+  document.getElementById("resultTitle").textContent=c.title;
+  document.getElementById("resultText").textContent=c.text;
   document.getElementById("result").classList.remove("hidden");
 
-  await saveDrawToSupabase(c.kind, c.title);
+  if(!historyAdmin){
+    await saveDrawToSupabase(c.kind, c.title);
+  }
   await renderHistory();
+  await updateDrawButton();
 
   if(c.title.includes("TÉLÉPHONE") && "vibrate" in navigator){
     navigator.vibrate([400,200,400,200,800]);
   }
-  document.getElementById("again").textContent = "Fermer";
+  document.getElementById("again").textContent="Fermer";
 }
 
 document.getElementById("drawButton").addEventListener("click", draw);
-document.getElementById("drawButton").addEventListener("keydown", e => {
-  if(e.key === "Enter" || e.key === " ") draw();
-});
-document.getElementById("again").addEventListener("click", () => {
-  document.getElementById("result").classList.add("hidden");
-});
+document.getElementById("drawButton").addEventListener("keydown", e=>{if(e.key==="Enter"||e.key===" ")draw()});
+document.getElementById("again").addEventListener("click",()=>document.getElementById("result").classList.add("hidden"));
 
 function resetToHome(){
-  role = "hide";
-  used = 0;
-  lastIndex = -1;
-  playerFirst = "";
-  playerLast = "";
-  gameCode = "";
-  historyAdmin = false;
+  role="hide";
+  used=0;
+  lastIndex=-1;
+  playerFirst="";
+  playerLast="";
+  gameCode="";
+  historyAdmin=false;
+  drawLimit=0;
 
   document.getElementById("result").classList.add("hidden");
   document.getElementById("historyPanel").classList.add("hidden");
-  document.getElementById("count").textContent = "0";
-  document.getElementById("homeMsg").textContent = "";
-  document.getElementById("first").value = "";
-  document.getElementById("last").value = "";
-  document.getElementById("code").value = "";
+  document.getElementById("count").textContent="0";
+  document.getElementById("homeMsg").textContent="";
+  document.getElementById("first").value="";
+  document.getElementById("last").value="";
+  document.getElementById("code").value="";
   document.getElementById("home").classList.remove("hidden");
   document.getElementById("game").classList.add("hidden");
 
-  document.querySelectorAll(".role").forEach(x => {
-    x.classList.toggle("active", x.getAttribute("data-role") === "hide");
-  });
-  window.scrollTo({top:0, behavior:"smooth"});
+  document.querySelectorAll(".role").forEach(x=>x.classList.toggle("active",x.dataset.role==="hide"));
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 document.getElementById("backMenu").addEventListener("click", resetToHome);
