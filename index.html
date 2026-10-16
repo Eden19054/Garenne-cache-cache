@@ -100,10 +100,10 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
   <div class="grid">
     <div class="field"><label for="code">Code de partie</label><input id="code" placeholder="Ex. GARENNE-42" maxlength="14"></div>
-    <div style="display:flex;align-items:end"><button id="join" type="button">Rejoindre la partie →</button></div>
+    <div style="display:flex;align-items:end"><button id="join">Rejoindre la partie →</button></div>
   </div>
   <div id="homeMsg" class="toast"></div>
-  <p class="note">Site créé par Eden</p>
+  <p class="note">Site créer par Eden</p>
 </section>
 
 <section id="game" class="card hidden">
@@ -123,8 +123,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
     <h3 id="resultTitle"></h3>
     <p id="resultText"></p>
     <div class="actions">
-      <button class="secondary" id="again" type="button">Continuer</button>
-      <button id="reset" type="button">Nouvelle partie</button>
+      <button class="secondary" id="again">Continuer</button>
+      <button id="reset">Nouvelle partie</button>
     </div>
   </div>
 
@@ -150,16 +150,22 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
     </div>
   </div>
 
-  <button class="secondary" id="backMenu" type="button" style="margin-top:12px">← Retour au menu</button>
+  <button class="secondary" id="backMenu" style="margin-top:12px">← Retour au menu</button>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://dgadwrbduthmuuujgvju.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_pi8vaaU177PBAXAWjIWC0g_s-CCIFtS';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 <script>
 const challenges = [
  // MALUS
- {kind:"MALUS", title:"📸 PHOTO DE LA CACHETTE", text:"Envoie une photo de ta cachette au chercheur. Ne montre pas de personne ni d’information privée."},
- {kind:"MALUS", title:"📳 TON TÉLÉPHONE SONNE", text:"Ton téléphone va sonner 1 fois à partir de maintenant.(N'oublie pas de mettre la sonnerie)"},
+ {kind:"MALUS", title:"📸 PHOTO DE LA CACHETTE", text:"Envoie une photo de ta cachette au chercheure. Ne montre pas de personne ni d’information privée."},
+ {kind:"MALUS", title:"📳 TON TÉLÉPHONE SONNE", text:"Ton téléphone va sonner 1 fois à partir de maintenant.(N'oublie pas de mettre la sonnerie"},
  {kind:"MALUS", title:"🗿 NE BOUGE PLUS", text:"Reste totalement immobile pendant 5 minutes. Ta cachette ne change pas !"},
- {kind:"MALUS", title:"🤫 POSITION PARTAGÉE", text:"Pendant 5 minutes, tu dois partager en direct ta position."},
+ {kind:"MALUS", title:"🤫 POSITION PARTAGÉE", text:"Pendant 5 minutes, tu doit partagée en directe ta position."},
  {kind:"MALUS", title:"🔦 APPEL MAUDIT", text:"Tu seras en appel vidéo avec le chercheur pendant 5 minutes."},
  {kind:"MALUS", title:"⏱️ IMMOBILE 2 MIN", text:"Pendant 2 minutes, tu ne peux ni changer de cachette ni te déplacer."},
  {kind:"MALUS", title:"👋 FRAPPE DES MAINS", text:"Frappe des mains pendant 2 minutes."},
@@ -172,31 +178,30 @@ const challenges = [
  {kind:"MALUS", title:"🔀 CHANGEMENT", text:"Tous les joueurs changent de cachette."},
 
  // BONUS
- {kind:"BONUS", title:"📸 FAUSSE PHOTO DE TA CACHETTE", text:"Une fausse photo de ta cachette va être envoyée au chercheur."},
- {kind:"BONUS", title:"🏃 FUITE EXPRESS", text:"Tu gagnes 60 secondes pour changer de cachette, le chercheur est immobilisé pendant 1 minute."},
- {kind:"BONUS", title:"🕵️ FAUSSE PISTE", text:"Une fausse localisation de toi peut être envoyée au chercheur."},
+ {kind:"BONUS", title:"🏃 FUITE EXPRESS", text:"Tu gagnes 60 secondes pour changer de cachette, le chercheur est immobiliser pendant 1 minute."},
+ {kind:"BONUS", title:"🕵️ FAUSSE PISTE", text:"Une fausse localisation de toi peut être envoyer au chercheur."},
  {kind:"BONUS", title:"🛡️ BOUCLIER", text:"Pendant 3 minutes, ton dernier indice ne peut pas être utilisé contre toi."},
- {kind:"BONUS", title:"⏸️ PAUSE", text:"Tu peux geler le chercheur 10 secondes 1 fois dans la partie."},
+ {kind:"BONUS", title:"⏸️ PAUSE", text:"Tu peux geler le chercheur 10 seconde 1 fois dans la partie."},
  {kind:"BONUS", title:"👻 INVISIBLE", text:"Pendant 2 minutes, les chercheurs doivent ignorer ta dernière zone connue."},
  {kind:"BONUS", title:"⏳ TEMPS BONUS", text:"Ajoute 2 minutes au temps de cachette générale."},
- {kind:"BONUS", title:"⏳ TRAITRE", text:"Choisis une personne qui devra donner sa localisation pendant 3 minutes."},
- {kind:"BONUS", title:"🧩 TRAQUEUR", text:"Tu peux voir la position du chercheur pendant 5 minutes."},
+ {kind:"BONUS", title:"⏳ TRAITRE", text:"Choisis une personne qui dvra donner sa localisation pendant 3 minutes."},
+ {kind:"BONUS", title:"🧩 TRAQUEUR", text:"Tu peux voire la position du chercheur pendant 5 minutes."},
  {kind:"BONUS", title:"🎭 DOUBLE BLUFF", text:"Donne un gage au chercheur pour le détourner de son objectif, il devra l'exécuter."},
  {kind:"BONUS", title:"🛡️ ANTI-REPÉRAGE", text:"Tu peux ignorer le prochain malus qui te concerne."},
  {kind:"BONUS", title:"🚪 SORTIE SECRÈTE", text:"Tu peux sortir de la zone pendant 5 minutes pour rejoindre une nouvelle cachette."},
  {kind:"BONUS", title:"🍀 CHANCE", text:"Le prochain tirage est automatiquement considéré comme un bonus."},
 
  // DÉFIS
- {kind:"DÉFI", title:"📍 POSITION PARTAGÉE", text:"Si tu acceptes le défi, ta zone approximative peut être partagée pendant 15 minutes et si tu ne te fais pas trouver pendant ces 15 minutes tu auras un joker."},
+ {kind:"DÉFI", title:"📍 POSITION PARTAGÉE", text:"Si tu acceptes le défis, ta zone approximative peut être partagée pendant 15 minutes et si tu ne te fais pas trouver pendant ces 15 minutes tu auras un joker."},
  {kind:"DÉFI", title:"🦊 NOM DE CODE", text:"Invente un nom de code pour ta cachette et fais-le deviner."},
  {kind:"DÉFI", title:"🌲 BRUIT DE LA FORÊT", text:"Imite discrètement un animal. Les chercheurs ont une chance de deviner lequel."},
  {kind:"DÉFI", title:"📷 PHOTO INDICE", text:"Envoie une photo d’un détail de ton environnement sans révéler directement ta position."},
- {kind:"DÉFI", title:"🎤 IMITATION", text:"Envoie un vocal de 5 secondes en imitant un animal si le chercheur le trouve tu devras crier coucou les gens."},
+ {kind:"DÉFI", title:"🎤 IMITATION", text:"Envoie un vocal de 5 secondes en imitant un animal si le chercheur le trouve tu devra crier coucou les gens."},
  {kind:"DÉFI", title:"🧠 DEVINETTE", text:"Envoie une devinette au groupe. Si personne ne trouve, tu gagnes 1 minute."},
- {kind:"DÉFI", title:"🔢 CODE SECRET", text:"Choisis un nombre entre 1 et 20. Les chercheurs ont une seule tentative s'ils trouvent le bon nombre tu dois aller au monument le plus proche."},
+ {kind:"DÉFI", title:"🔢 CODE SECRET", text:"Choisis un nombre entre 1 et 20. Les chercheurs ont une seule tentative si il trouve le bon nombre tu doit aller au monument le plus proche."},
  {kind:"DÉFI", title:"🌿 INDICE NATURE", text:"Décris un élément naturel près de toi sans dire où tu es."},
  {kind:"DÉFI", title:"😶 SANS PARLER", text:"Fais deviner ton prénom uniquement avec des gestes à un coéquipier."},
- {kind:"DÉFI", title:"🎬 MINI VIDÉO", text:"Si tu le souhaites, envoie une courte vidéo de l’environnement au chercheur et obtiens la position du chercheur mais attention tu n'as pas le droit de bouger pendant 2 minutes."},
+ {kind:"DÉFI", title:"🎬 MINI VIDÉO", text:"Si tu le souhaites, envoie une courte vidéo de l’environnement au chercheur et obtient la position du chercheur mais attention tu n'as pas le droit de bouger pendant 2 minutes."},
  {kind:"DÉFI", title:"🕶️ CAMOUFLAGE", text:"Trouve un détail autour de toi qui pourrait te servir de camouflage et décris-le."},
  {kind:"DÉFI", title:"📍 ZONE APPROXIMATIVE", text:"Si tu es d’accord, partage uniquement une zone approximative, jamais une adresse précise."},
  {kind:"DÉFI", title:"🎲 PAIR OU IMPAIR", text:"Choisis pair ou impair avant un nombre aléatoire. Si tu gagnes, tu obtiens 1 minute bonus."}
@@ -211,41 +216,20 @@ document.querySelectorAll(".role").forEach(b=>{
   });
 });
 
-// --- SYNCHRONISATION SUPABASE POUR L'HISTORIQUE ---
-async function getHistoryFromSupabase(){
-  if (!gameCode) return [];
-  const { data, error } = await supabase
-    .from('game_draws')
-    .select('*')
-    .eq('game_code', gameCode)
-    .order('created_at', { ascending: true });
-  
-  if (error) {
-    console.error("Erreur Supabase:", error);
-    return [];
-  }
-  return data.map((item, index) => ({
-    first: item.first_name,
-    last: item.last_name,
-    kind: item.kind,
-    title: item.title,
-    number: index + 1,
-    time: new Date(item.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
-  }));
+function historyKey(){
+  return `garenne-history-${gameCode.toUpperCase()}`;
 }
 
-async function saveDrawToSupabase(kind, title) {
-  if (!gameCode || historyAdmin) return;
-  await supabase.from('game_draws'].insert([
-    {
-      game_code: gameCode,
-      first_name: playerFirst,
-      last_name: playerLast,
-      kind: kind,
-      title: title,
-      draw_number: used
-    }
-  ]);
+function getHistory(){
+  try{
+    return JSON.parse(localStorage.getItem(historyKey()) || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function saveHistory(history){
+  localStorage.setItem(historyKey(), JSON.stringify(history.slice(-100)));
 }
 
 function limitKey(){
@@ -272,18 +256,17 @@ function saveDrawLimit(){
   msg.textContent=`Limite enregistrée : ${value} tirage${value>1?"s":""} maximum par joueur.`;
 }
 
-async function getPlayerDrawCount() {
-  if (historyAdmin) return 0;
-  const history = await getHistoryFromSupabase();
-  return history.filter(item =>
-    item.first.toLowerCase() === playerFirst.toLowerCase() &&
-    item.last.toLowerCase() === playerLast.toLowerCase()
+function getPlayerDrawCount(){
+  if(historyAdmin) return 0;
+  return getHistory().filter(item =>
+    item.first.toLowerCase()===playerFirst.toLowerCase() &&
+    item.last.toLowerCase()===playerLast.toLowerCase()
   ).length;
 }
 
-async function updateDrawButton(){
+function updateDrawButton(){
   const button=document.getElementById("drawButton");
-  const current = await getPlayerDrawCount();
+  const current=getPlayerDrawCount();
 
   if(historyAdmin || drawLimit===0){
     button.style.opacity="";
@@ -305,13 +288,18 @@ async function updateDrawButton(){
   }
 }
 
-async function resetGameAdmin(){
+function resetGameAdmin(){
   if(!historyAdmin || !gameCode) return;
 
-  const confirmed = confirm(`Réinitialiser la partie ${gameCode} ?\n\nCela supprimera tous les tirages enregistrés et la limite de tirages.\nCette action est irréversible.`);
+  const confirmed = confirm(
+    `Réinitialiser la partie ${gameCode} ?\\n\\n` +
+    "Cela supprimera tous les tirages enregistrés et la limite de tirages.\\n" +
+    "Cette action est irréversible."
+  );
+
   if(!confirmed) return;
 
-  await supabase.from('game_draws').delete().eq('game_code', gameCode);
+  localStorage.removeItem(historyKey());
   localStorage.removeItem(limitKey());
 
   drawLimit=0;
@@ -320,17 +308,19 @@ async function resetGameAdmin(){
 
   document.getElementById("drawLimit").value="";
   document.getElementById("limitMsg").textContent="Partie réinitialisée : aucune limite de tirages.";
-  document.getElementById("resetGameMsg").textContent=`La partie ${gameCode} a été réinitialisée.`;
+  document.getElementById("resetGameMsg").textContent=
+    `La partie ${gameCode} a été réinitialisée.`;
 
-  await renderHistory();
-  await updateDrawButton();
+  renderHistory();
+  updateDrawButton();
   document.getElementById("count").textContent="0";
 }
 
-async function renderHistory(){
+function renderHistory(){
   const panel=document.getElementById("historyPanel");
   const list=document.getElementById("historyList");
 
+  // L'historique des autres joueurs est réservé au mode spécial 14 / 14.
   if(!historyAdmin){
     panel.classList.add("hidden");
     return;
@@ -342,22 +332,21 @@ async function renderHistory(){
   document.getElementById("limitMsg").textContent=drawLimit
     ? `Limite actuelle : ${drawLimit} tirage${drawLimit>1?"s":""} par joueur.`
     : "Aucune limite définie pour cette partie.";
-    
-  const remoteHistory = await getHistoryFromSupabase();
+  const history=getHistory();
 
-  if(!remoteHistory.length){
+  if(!history.length){
     list.innerHTML='<div class="empty-history">Aucun tirage pour le moment.</div>';
     return;
   }
 
-  list.innerHTML=remoteHistory.slice().reverse().map(item=>`
-    <div class="history-item" style="background:#0a120d; padding:12px; margin-bottom:8px; border-radius:10px; border:1px solid #ffffff12;">
-      <div style="display:flex; justify-content:space-between; font-weight:bold;">
-        <div>${escapeHtml(item.first)} ${escapeHtml(item.last)}</div>
-        <div style="color:var(--green2)">${escapeHtml(item.kind)}</div>
+  list.innerHTML=history.slice().reverse().map(item=>`
+    <div class="history-item">
+      <div class="history-head">
+        <div class="history-name">${escapeHtml(item.first)} ${escapeHtml(item.last)}</div>
+        <div class="history-kind">${escapeHtml(item.kind)}</div>
       </div>
-      <div style="margin:4px 0">${escapeHtml(item.title)}</div>
-      <div style="font-size:12px; color:var(--muted)">Tirage n°${item.number} · ${escapeHtml(item.time)}</div>
+      <div class="history-title">${escapeHtml(item.title)}</div>
+      <div class="history-meta">Tirage n°${item.number} · ${escapeHtml(item.time)}</div>
     </div>
   `).join("");
 }
@@ -368,13 +357,15 @@ function escapeHtml(value){
   }[c]));
 }
 
-async function join(){
+function join(){
   const first=document.getElementById("first").value.trim();
   const last=document.getElementById("last").value.trim();
   const code=document.getElementById("code").value.trim();
   const msg=document.getElementById("homeMsg");
   if(!first || !last || !code){ msg.textContent="Renseigne ton prénom, ton nom et le code de partie."; return; }
 
+  // Le prénom ET le nom doivent être exactement "14" pour afficher
+  // l'historique des autres joueurs de la partie.
   historyAdmin = first === "14" && last === "14";
 
   playerFirst=first;
@@ -393,20 +384,19 @@ async function join(){
     :"Prépare ta recherche et utilise le tirage mystère autant de fois que tu veux !";
 
   drawLimit=getDrawLimit();
-  await renderHistory();
-  await updateDrawButton();
+  renderHistory();
+  updateDrawButton();
   window.scrollTo({top:0,behavior:"smooth"});
 }
+document.getElementById("join").onclick=join;
+document.getElementById("saveDrawLimit").onclick=saveDrawLimit;
+document.getElementById("resetGameAdmin").onclick=resetGameAdmin;
 
-document.getElementById("join").addEventListener("click", join);
-document.getElementById("saveDrawLimit").addEventListener("click", saveDrawLimit);
-document.getElementById("resetGameAdmin").addEventListener("click", resetGameAdmin);
-
-async function draw(){
+function draw(){
   drawLimit=getDrawLimit();
 
-  if(!historyAdmin && drawLimit>0 && (await getPlayerDrawCount())>=drawLimit){
-    await updateDrawButton();
+  if(!historyAdmin && drawLimit>0 && getPlayerDrawCount()>=drawLimit){
+    updateDrawButton();
     return;
   }
 
@@ -422,23 +412,38 @@ async function draw(){
   document.getElementById("resultText").textContent=c.text;
   document.getElementById("result").classList.remove("hidden");
 
-  if(!historyAdmin){
-    await saveDrawToSupabase(c.kind, c.title);
-  }
-  await renderHistory();
-  await updateDrawButton();
+  // Enregistre le tirage avec l'identité du joueur et le code de partie.
+  const history=getHistory();
 
+  // Le compte 14 / 14 sert uniquement à consulter l'historique :
+  // ses propres clics ne sont pas ajoutés à l'historique.
+  if(!historyAdmin){
+    history.push({
+      first:playerFirst,
+      last:playerLast,
+      kind:c.kind,
+      title:c.title,
+      number:history.length+1,
+      time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
+    });
+    saveHistory(history);
+  }
+  renderHistory();
+  updateDrawButton();
+
+  // Sur mobile, on peut déclencher une vibration pour le défi "téléphone".
+  // Une vraie sonnerie à distance nécessite une application/backend et ne peut
+  // pas être imposée par une simple page web.
   if(c.title.includes("TÉLÉPHONE") && "vibrate" in navigator){
     navigator.vibrate([400,200,400,200,800]);
   }
   document.getElementById("again").textContent="Fermer";
 }
-
-document.getElementById("drawButton").addEventListener("click", draw);
-document.getElementById("drawButton").addEventListener("keydown", e=>{if(e.key==="Enter"||e.key===" ")draw()});
-document.getElementById("again").addEventListener("click",()=>document.getElementById("result").classList.add("hidden"));
-
-function resetToHome(){
+document.getElementById("drawButton").onclick=draw;
+document.getElementById("drawButton").onkeydown=e=>{if(e.key==="Enter"||e.key===" ")draw()};
+document.getElementById("again").onclick=()=>document.getElementById("result").classList.add("hidden");
+document.getElementById("backMenu").onclick=()=>{
+  // Retour au menu sans supprimer l'historique ni les réglages de la partie.
   role="hide";
   used=0;
   lastIndex=-1;
@@ -460,10 +465,32 @@ function resetToHome(){
 
   document.querySelectorAll(".role").forEach(x=>x.classList.toggle("active",x.dataset.role==="hide"));
   window.scrollTo({top:0,behavior:"smooth"});
-}
+};
 
-document.getElementById("backMenu").addEventListener("click", resetToHome);
-document.getElementById("reset").addEventListener("click", resetToHome);
+document.getElementById("reset").onclick=()=>{
+  // "Prochaine partie" : on quitte la partie actuelle et on revient
+  // à l'écran d'accueil sans supprimer l'historique enregistré pour son code.
+  role="hide";
+  used=0;
+  lastIndex=-1;
+  playerFirst="";
+  playerLast="";
+  gameCode="";
+  historyAdmin=false;
+
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("historyPanel").classList.add("hidden");
+  document.getElementById("count").textContent="0";
+  document.getElementById("homeMsg").textContent="";
+  document.getElementById("first").value="";
+  document.getElementById("last").value="";
+  document.getElementById("code").value="";
+  document.getElementById("home").classList.remove("hidden");
+  document.getElementById("game").classList.add("hidden");
+
+  document.querySelectorAll(".role").forEach(x=>x.classList.toggle("active",x.dataset.role==="hide"));
+  window.scrollTo({top:0,behavior:"smooth"});
+};
 </script>
 </body>
 </html>
