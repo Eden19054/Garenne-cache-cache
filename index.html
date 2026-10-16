@@ -105,6 +105,11 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
   <div id="homeMsg" class="toast"></div>
   <p class="note">Site créé par Eden</p>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+const SUPABASE_URL = 'https://dgadwrbduthmuuujgvju.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_pi8vaaU177PBAXAWjIWC0g_s-CCIFtS';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 <section id="game" class="card hidden">
   <div class="topbar">
@@ -152,12 +157,8 @@ button:disabled{opacity:.45;cursor:not-allowed;transform:none}
 
   <button class="secondary" id="backMenu" type="button" style="margin-top:12px">← Retour au menu</button>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://dgadwrbduthmuuujgvju.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_pi8vaaU177PBAXAWjIWC0g_s-CCIFtS';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+<script>
 const challenges = [
  // MALUS
  {kind:"MALUS", title:"📸 PHOTO DE LA CACHETTE", text:"Envoie une photo de ta cachette au chercheur. Ne montre pas de personne ni d’information privée."},
